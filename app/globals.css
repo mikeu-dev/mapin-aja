@@ -31,3 +31,9 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Contoh CSS yang memungkinkan interaksi pada textarea */
+textarea {
+  pointer-events: auto; /* Pastikan pointer-events tidak diatur sebagai none */
+}
+
