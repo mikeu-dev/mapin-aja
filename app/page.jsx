@@ -6,27 +6,24 @@ import Header from "./components/NavComponent";
 import GeojsonEditor from "./components/GeojsonEditor";
 
 export default function Home() {
-  const initialGeoJSON = {
-    type: "FeatureCollection",
-    features: [],
-  };
+  const [geoJsonData, setGeoJsonData] = useState(null);
 
-  const [geoJSON, setGeoJSON] = useState(initialGeoJSON);
-
-  const handleGeoJSONChange = (newGeoJSON) => {
-    setGeoJSON(newGeoJSON);
-  };
-
-  const downloadGeoJson = () => {
-    const dataStr =
-      "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(geoJSON));
-    const downloadAnchorNode = document.createElement("a");
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "data.geojson");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+  // Fungsi untuk menangani unggahan file
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          console.log("GeoJSON Data:", data);  // Cek data GeoJSON yang diterima
+          setGeoJsonData(data);  // Menyimpan data GeoJSON
+        } catch (error) {
+          console.error('Invalid GeoJSON file', error);
+        }
+      };
+      reader.readAsText(file);
+    }
   };
 
   return (
@@ -34,26 +31,26 @@ export default function Home() {
       <Head>
         <title>Mapin Aja</title>
       </Head>
-      <Header />
+      <Header onFileUpload={handleFileUpload} />
       <main className="h-[665px] w-full">
         <div className="flex">
           <MapComponent
-            geoJSON={geoJSON}
-            onGeoJSONChange={handleGeoJSONChange}
+            geoJsonData={geoJsonData}
+            onGeoJSONChange={() => { }}
           />
           <GeojsonEditor
-            initialGeoJSON={geoJSON}
-            onChange={handleGeoJSONChange}
+            initialGeoJSON={geoJsonData}
+            onChange={() => { }}
           />
         </div>
-        <div className="absolute top-0 right-0 mt-4 mr-4">
+        {/* <div className="absolute top-0 right-0 mt-4 mr-4">
           <button
-            onClick={downloadGeoJson}
+            onClick={() => { }}
             className="px-4 py-2 bg-blue-500 text-white rounded"
           >
             Download GeoJSON
           </button>
-        </div>
+        </div> */}
       </main>
     </div>
   );

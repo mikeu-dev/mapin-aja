@@ -1,6 +1,6 @@
 import React from "react";
 
-const Header = () => {
+const Header = ({ onFileUpload }) => {
   return (
     <header className="bg-gray-800 text-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -9,14 +9,13 @@ const Header = () => {
             <h1 className="text-2xl font-bold">Mapin Aja</h1>
           </div>
           <nav className="space-x-4">
+            <input type="file" accept=".geojson" onChange={onFileUpload} />
+
             <a href="#" className="text-gray-300 hover:text-white">
-              File
+              Save
             </a>
             <a href="#" className="text-gray-300 hover:text-white">
-              Edit
-            </a>
-            <a href="#" className="text-gray-300 hover:text-white">
-              View
+              New
             </a>
             <a href="#" className="text-gray-300 hover:text-white">
               Help

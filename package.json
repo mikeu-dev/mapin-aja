@@ -9,11 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@turf/turf": "^7.1.0",
+    "ace-builds": "^1.36.5",
     "jsoneditor": "^10.0.3",
     "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
+    "mapin-aja": "file:",
     "next": "14.2.4",
     "react": "^18",
+    "react-ace": "^13.0.0",
     "react-dom": "^18",
     "react-leaflet": "^4.2.1",
     "react-leaflet-draw": "^0.20.4"

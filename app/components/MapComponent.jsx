@@ -2,15 +2,46 @@ import { useEffect, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
-import { MapContainer, TileLayer } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import "leaflet-draw";
 
-const MapComponent = ({ geoJSON, onGeoJSONChange }) => {
+const MapComponent = ({ geoJsonData, onGeoJSONChange }) => {
   const [map, setMap] = useState(null);
 
-  useEffect(() => {
-    console.log("Map state updated:", map);
+  // Komponen untuk menangani fitBounds dengan animasi
+  const FitBoundsComponent = () => {
+    const mapInstance = useMap(); // Mengakses peta melalui hook useMap
 
+    useEffect(() => {
+      if (mapInstance && geoJsonData) {
+        console.log("GeoJSON Data:", geoJsonData);
+
+        // Hapus layer lama sebelum menambahkan layer baru
+        mapInstance.eachLayer((layer) => {
+          if (layer instanceof L.GeoJSON) {
+            mapInstance.removeLayer(layer);
+          }
+        });
+
+        // Tambahkan GeoJSON ke peta
+        const geoJsonLayer = L.geoJSON(geoJsonData).addTo(mapInstance);
+
+        // Dapatkan bounds dari layer GeoJSON yang baru
+        const newBounds = geoJsonLayer.getBounds();
+
+        // Terapkan fitBounds dengan animasi
+        mapInstance.fitBounds(newBounds, {
+          animate: true, // Mengaktifkan animasi
+          duration: 1,   // Durasi animasi dalam detik (lebih besar = lebih lambat)
+          easeLinearity: 0.25, // Menyesuaikan kelancaran animasi (0 = linear, 1 = cepat lalu lambat)
+        });
+      }
+    }, [mapInstance]); // Tidak perlu geoJsonData dalam dependensi karena geoJsonData sudah digunakan dalam kondisi if
+
+    return null;
+  };
+
+  useEffect(() => {
     if (map) {
       const drawnItems = new L.FeatureGroup();
       map.addLayer(drawnItems);
@@ -40,30 +71,9 @@ const MapComponent = ({ geoJSON, onGeoJSONChange }) => {
     }
   }, [map, onGeoJSONChange]);
 
-  useEffect(() => {
-    console.log("GeoJSON state updated:", geoJSON);
-
-    if (map && geoJSON.features.length > 0) {
-      try {
-        // Clear existing layers
-        map.eachLayer((layer) => {
-          if (layer instanceof L.GeoJSON) {
-            map.removeLayer(layer);
-          }
-        });
-
-        const geoJsonLayer = L.geoJSON(geoJSON);
-        geoJsonLayer.addTo(map);
-      } catch (e) {
-        console.error("Invalid GeoJSON:", e);
-      }
-    }
-  }, [map, geoJSON]);
-
   return (
     <MapContainer
       whenCreated={(mapInstance) => {
-        console.log("Map created:", mapInstance);
         setMap(mapInstance);
       }}
       center={[51.505, -0.09]}
@@ -71,6 +81,10 @@ const MapComponent = ({ geoJSON, onGeoJSONChange }) => {
       style={{ height: "665px", width: "100%" }}
     >
       <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {/* Menampilkan GeoJSON jika ada */}
+      {geoJsonData && <GeoJSON data={geoJsonData} />}
+      {/* Komponen FitBoundsComponent untuk melakukan fitBounds dengan animasi */}
+      <FitBoundsComponent />
     </MapContainer>
   );
 };
