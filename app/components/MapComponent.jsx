@@ -28,8 +28,6 @@ const MapComponent = ({ geoJsonData, onGeoJSONChange }) => {
 
     useEffect(() => {
       if (mapInstance && geoJsonData) {
-        console.log("GeoJSON Data:", geoJsonData);
-
         // Hapus layer lama jika ada
         if (geoJsonLayer) {
           mapInstance.removeLayer(geoJsonLayer);
@@ -99,7 +97,6 @@ const MapComponent = ({ geoJsonData, onGeoJSONChange }) => {
         const layer = e.layer;
         drawnItems.addLayer(layer);
         const newGeoJSON = drawnItems.toGeoJSON();
-        console.log("New GeoJSON created:", newGeoJSON);
         onGeoJSONChange(newGeoJSON);
       });
 

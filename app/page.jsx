@@ -44,7 +44,7 @@ export default function Home() {
       <Head>
         <title>Mapin Aja</title>
       </Head>
-      <Header onFileUpload={handleFileUpload} />
+      <Header onFileUpload={handleFileUpload} Download={geoJsonData} />
       <main className="h-[665px] w-full">
         <div className="flex">
           <MapComponent
