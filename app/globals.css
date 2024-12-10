@@ -37,3 +37,6 @@ textarea {
   pointer-events: auto; /* Pastikan pointer-events tidak diatur sebagai none */
 }
 
+.sr-only {
+    display: none;
+  }

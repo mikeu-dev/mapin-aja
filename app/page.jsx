@@ -1,12 +1,26 @@
 "use client";
 import Head from "next/head";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MapComponent from "./components/MapComponent";
 import Header from "./components/NavComponent";
 import GeojsonEditor from "./components/GeojsonEditor";
 
 export default function Home() {
-  const [geoJsonData, setGeoJsonData] = useState(null);
+  const [geoJsonData, setGeoJsonData] = useState({
+    type: "FeatureCollection",
+    features: [],
+  });
+
+  const handleGeoJSONChange = (updatedGeoJSON) => {
+    setGeoJsonData(updatedGeoJSON);
+  };
+
+  // Ini akan memvalidasi apakah geoJsonData sudah benar atau belum
+  useEffect(() => {
+    if (geoJsonData) {
+      console.log("Updated GeoJSON data:", geoJsonData);
+    }
+  }, [geoJsonData]);
 
   // Fungsi untuk menangani unggahan file
   const handleFileUpload = (event) => {
@@ -16,7 +30,6 @@ export default function Home() {
       reader.onload = () => {
         try {
           const data = JSON.parse(reader.result);
-          console.log("GeoJSON Data:", data);  // Cek data GeoJSON yang diterima
           setGeoJsonData(data);  // Menyimpan data GeoJSON
         } catch (error) {
           console.error('Invalid GeoJSON file', error);
@@ -36,11 +49,11 @@ export default function Home() {
         <div className="flex">
           <MapComponent
             geoJsonData={geoJsonData}
-            onGeoJSONChange={() => { }}
+            onGeoJSONChange={handleGeoJSONChange}
           />
           <GeojsonEditor
             initialGeoJSON={geoJsonData}
-            onChange={() => { }}
+            onChange={handleGeoJSONChange}
           />
         </div>
         {/* <div className="absolute top-0 right-0 mt-4 mr-4">

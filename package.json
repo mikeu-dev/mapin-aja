@@ -13,6 +13,7 @@
     "ace-builds": "^1.36.5",
     "jsoneditor": "^10.0.3",
     "leaflet": "^1.9.4",
+    "leaflet-control-geocoder": "^2.4.0",
     "leaflet-draw": "^1.0.4",
     "mapin-aja": "file:",
     "next": "14.2.4",
