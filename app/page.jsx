@@ -56,14 +56,6 @@ export default function Home() {
             onChange={handleGeoJSONChange}
           />
         </div>
-        {/* <div className="absolute top-0 right-0 mt-4 mr-4">
-          <button
-            onClick={() => { }}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Download GeoJSON
-          </button>
-        </div> */}
       </main>
     </div>
   );
