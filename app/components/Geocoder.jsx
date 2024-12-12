@@ -17,7 +17,7 @@ const LeafletControlGeocoder = () => {
                     collapsed: false,
                     geocoder: L.Control.Geocoder.nominatim(),
                     position: "topright", // posisi kontrol
-                    placeholder: "Cari lokasi..." // placeholder input
+                    placeholder: "Search..." // placeholder input
                 });
                 geoCoderControl.addTo(map);
 
