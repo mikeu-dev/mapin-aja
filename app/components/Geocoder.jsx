@@ -26,7 +26,7 @@ const LeafletControlGeocoder = () => {
 
                 // Membuat elemen untuk menampilkan hasil pencarian
                 const resultsContainer = document.createElement("div");
-                resultsContainer.classList.add("leaflet-control-geocoder-results", "relative", "bg-white", "border", "border-gray-300", "rounded-md", "shadow-lg", "max-h-60", "overflow-auto", "z-10");
+                resultsContainer.classList.add("leaflet-control-geocoder-results", "relative", "bg-white", "border", "border-gray-300", "rounded-md", "shadow-lg", "max-h-60", "overflow-auto", "z-10", "w-80", "max-w-80");
                 geoCoderControl.getContainer().appendChild(resultsContainer);
 
                 // Event listener untuk menangani pencarian saat input berubah
@@ -44,7 +44,7 @@ const LeafletControlGeocoder = () => {
                                 // Tampilkan hasil pencarian
                                 results.forEach((result) => {
                                     const item = document.createElement('div');
-                                    item.className = 'leaflet-control-geocoder-result relative cursor-pointer p-2 hover:bg-gray-100';
+                                    item.className = 'leaflet-control-geocoder-result relative cursor-pointer p-2 hover:bg-gray-100 max-w-80';
                                     item.innerHTML = result.name;
                                     item.addEventListener('click', () => {
                                         // Menangani klik hasil pencarian
@@ -75,7 +75,7 @@ const LeafletControlGeocoder = () => {
                     }
                 });
             }
-        }
+        } 
     }, [map]);  // Pastikan efek hanya berjalan sekali pada mount
 
     return null;

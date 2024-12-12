@@ -1,11 +1,11 @@
 import AceEditor from "react-ace";
 import { useEffect, useState } from "react";
+
 import "ace-builds/src-noconflict/mode-json";
-import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-noconflict/theme-solarized_light";
 
 const GeojsonEditor = ({ initialGeoJSON, onChange }) => {
   const [geoJSON, setGeoJSON] = useState("");
-  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
     if (initialGeoJSON) {
@@ -19,20 +19,11 @@ const GeojsonEditor = ({ initialGeoJSON, onChange }) => {
     setGeoJSON(newValue);
     try {
       const parsed = JSON.parse(newValue);
-      setErrors([]); // Reset errors jika JSON valid
       onChange(parsed); // Callback saat JSON valid
     } catch (e) {
-      const lineNumber = e.location ? e.location.line : null;
-      setErrors([{ message: e.message, line: lineNumber }]); // Menyimpan informasi kesalahan
+      // Abaikan jika JSON tidak valid
     }
   };
-
-  const annotations = errors.map(error => ({
-    row: error.line - 1, // AceEditor mengindeks baris mulai dari 0
-    column: 0,
-    text: error.message,
-    type: "error", // Jenis anotasi adalah error
-  }));
 
   return (
     <div style={{
@@ -43,7 +34,7 @@ const GeojsonEditor = ({ initialGeoJSON, onChange }) => {
     }}>
       <AceEditor
         mode="json"
-        theme=""
+        theme="solarized_light"
         name="geojson-editor"
         value={geoJSON}
         onChange={handleChange}
@@ -57,11 +48,10 @@ const GeojsonEditor = ({ initialGeoJSON, onChange }) => {
           showLineNumbers: true,
           tabSize: 2,
         }}
-        annotations={annotations} // Menambahkan anotasi kesalahan
         style={{
           width: "100%",
-          height: "91vh",
-          borderRadius: "5px",
+          height: "92vh",
+          borderRadius: "3px",
         }}
       />
     </div>

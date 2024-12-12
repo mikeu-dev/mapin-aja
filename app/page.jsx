@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import MapComponent from "./components/MapComponent";
@@ -15,14 +15,12 @@ export default function Home() {
     setGeoJsonData(updatedGeoJSON);
   };
 
-  // Ini akan memvalidasi apakah geoJsonData sudah benar atau belum
   useEffect(() => {
     if (geoJsonData) {
       console.log("Updated GeoJSON data:", geoJsonData);
     }
   }, [geoJsonData]);
 
-  // Fungsi untuk menangani unggahan file
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -45,17 +43,15 @@ export default function Home() {
         <title>Mapin Aja</title>
       </Head>
       <Header onFileUpload={handleFileUpload} Download={geoJsonData} />
-      <main className="h-[665px] w-full">
-        <div className="flex">
-          <MapComponent
-            geoJsonData={geoJsonData}
-            onGeoJSONChange={handleGeoJSONChange}
-          />
-          <GeojsonEditor
-            initialGeoJSON={geoJsonData}
-            onChange={handleGeoJSONChange}
-          />
-        </div>
+      <main className="h-[665px] w-full flex">
+        <MapComponent
+          geoJsonData={geoJsonData}
+          onGeoJSONChange={handleGeoJSONChange}
+        />
+        <GeojsonEditor
+          initialGeoJSON={geoJsonData}
+          onChange={handleGeoJSONChange}
+        />
       </main>
     </div>
   );
