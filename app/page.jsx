@@ -6,6 +6,7 @@ import * as topojson from 'topojson-client';
 import MapComponent from "./components/MapComponent";
 import Header from "./components/NavComponent";
 import GeojsonEditor from "./components/GeojsonEditor";
+import { createNotification, Notification } from './components/Notification'; // Import createNotification
 
 export default function Home() {
   const [geoJsonData, setGeoJsonData] = useState({
@@ -36,44 +37,60 @@ export default function Home() {
           if (fileName.endsWith(".geojson")) {
             const data = JSON.parse(fileContent);
             setGeoJsonData(data);
+            createNotification({
+              type: 'success',
+              message: `File ${file.name} berhasil diunggah.`,
+              title: 'Upload Berhasil',
+            });
           } else if (fileName.endsWith(".kml")) {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(fileContent, "application/xml");
 
-            const parseError = xmlDoc.getElementsByTagName("parsererror");
-            if (parseError.length > 0) {
-              console.error("Error parsing XML:", parseError[0].textContent);
-              alert("Invalid KML structure.");
-              return;
-            }
-
             const converted = kml(xmlDoc);
             setGeoJsonData(converted);
+            createNotification({
+              type: 'info',
+              message: `KML file ${file.name} successfully converted to GeoJSON.`,
+              title: 'Konversi Berhasil',
+            });
           } else if (fileName.endsWith(".topojson")) {
             const topojsonData = JSON.parse(fileContent);
             const geojsonData = topojson.feature(topojsonData, topojsonData.objects[Object.keys(topojsonData.objects)[0]]);
             setGeoJsonData(geojsonData);
+            createNotification({
+              type: 'warning',
+              message: `TopoJSON file ${file.name} is uploaded. Check the GeoJSON.`,
+              title: 'Peringatan',
+            });
           } else {
             console.error("Unsupported file format");
-            alert("Unsupported file format. Please upload a GeoJSON, KML, or TopoJSON file.");
+            createNotification({
+              type: 'error',
+              message: `Unsupported file format ${file.name}. Please upload a GeoJSON, KML, or TopoJSON file.`,
+              title: 'Error',
+            });
           }
         } catch (error) {
           console.error("Invalid file", error);
-          alert("Error parsing the file. Please check the format.");
+          createNotification({
+            type: 'error',
+            message: 'Error parsing the file. Please check the format.',
+            title: 'Error',
+          });
         }
       };
       reader.readAsText(file);
     }
   };
 
-
   return (
     <div>
       <Head>
         <title>Mapin Aja</title>
+        <meta name="description">Web for geospatial viewer.</meta>
       </Head>
       <Header onFileUpload={handleFileUpload} Download={geoJsonData} />
-      <main className="h-[665px] w-full flex">
+      <main className="h-[665px] w-full lg:flex">
         <MapComponent
           geoJsonData={geoJsonData}
           onGeoJSONChange={handleGeoJSONChange}
@@ -83,6 +100,8 @@ export default function Home() {
           onChange={handleGeoJSONChange}
         />
       </main>
+      <Notification /> {/* Menambahkan komponen notifikasi */}
     </div>
   );
 }
+

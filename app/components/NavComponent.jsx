@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import tokml from "tokml";
-import * as topojson from 'topojson-server'; // Impor topojson-client
+import * as topojson from 'topojson-server';
 
 const Header = ({ onFileUpload, Download }) => {
   const [selectedFormat, setSelectedFormat] = useState("geojson");
@@ -29,12 +29,16 @@ const Header = ({ onFileUpload, Download }) => {
       fileExtension = "topojson";
     }
 
-    const downloadAnchorNode = document.createElement("a");
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `map.${fileExtension}`);
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+    if (Download.features.length > 0) {
+      const downloadAnchorNode = document.createElement("a");
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", `map.${fileExtension}`);
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+    } else {
+      alert("Data not found!");
+    }
   };
 
   return (
@@ -62,27 +66,22 @@ const Header = ({ onFileUpload, Download }) => {
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-40 bg-gray-800 text-white rounded-md shadow-lg z-[100002]">
                   <div className="p-2">
-                    <select
-                      value={selectedFormat}
-                      onChange={(e) => setSelectedFormat(e.target.value)}
-                      className="w-full bg-gray-800 text-white border-none"
-                    >
+                    <ul className="space-y-1">
                       {formats.map((format) => (
-                        <option key={format.value} value={format.value} className="hover:!bg-white hover:!text-gray-400">
-                          {format.label}
-                        </option>
+                        <li key={format.value}>
+                          <button
+                            onClick={() => {
+                              downloadFile(format.value);
+                              setIsDropdownOpen(false);
+                            }}
+                            className="w-full text-gray-300 hover:text-gray-600 px-4 py-1 text-left hover:bg-gray-50 hover:rounded-sm"
+                          >
+                            {format.label}
+                          </button>
+                        </li>
                       ))}
-                    </select>
+                    </ul>
                   </div>
-                  <button
-                    onClick={() => {
-                      downloadFile(selectedFormat);
-                      setIsDropdownOpen(false);
-                    }}
-                    className="w-full text-gray-300 hover:text-white px-4 py-2 text-left"
-                  >
-                    Download
-                  </button>
                 </div>
               )}
             </div>

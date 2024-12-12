@@ -28,10 +28,11 @@ const GeojsonEditor = ({ initialGeoJSON, onChange }) => {
   return (
     <div style={{
       width: "100%",
-      maxWidth: "350px",
       margin: "auto",
       overflow: "hidden",
-    }}>
+    }}
+    className="lg:max-w-[350px]"
+    >
       <AceEditor
         mode="json"
         theme="solarized_light"
