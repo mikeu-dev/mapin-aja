@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import tokml from "tokml";
 import * as topojson from 'topojson-server';
+import { createNotification } from './Notification';
 
 const Header = ({ onFileUpload, Download }) => {
   const [selectedFormat, setSelectedFormat] = useState("geojson");
@@ -37,7 +38,11 @@ const Header = ({ onFileUpload, Download }) => {
       downloadAnchorNode.click();
       downloadAnchorNode.remove();
     } else {
-      alert("Data not found!");
+      createNotification({
+        type: 'warning',
+        message: `data not found!`,
+        title: 'warning',
+      });
     }
   };
 
@@ -92,7 +97,11 @@ const Header = ({ onFileUpload, Download }) => {
             <a
               href="#"
               className="text-gray-300 hover:text-white"
-              onClick={() => alert("Ups! Fitur belum tersedia.")}>
+              onClick={() => createNotification({
+                type: 'info',
+                message: `coming soon!`,
+                title: 'info',
+              })}>
               Help
             </a>
           </nav>

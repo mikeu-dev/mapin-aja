@@ -24,6 +24,7 @@
     "react-leaflet": "^4.2.1",
     "react-leaflet-draw": "^0.20.4",
     "react-notifications": "^1.7.4",
+    "react-toastify": "^10.0.6",
     "tokml": "^0.4.0",
     "topojson-client": "^3.1.0",
     "topojson-server": "^3.0.1"

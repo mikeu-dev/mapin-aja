@@ -6,7 +6,7 @@ import * as topojson from 'topojson-client';
 import MapComponent from "./components/MapComponent";
 import Header from "./components/NavComponent";
 import GeojsonEditor from "./components/GeojsonEditor";
-import { createNotification, Notification } from './components/Notification'; // Import createNotification
+import { createNotification, Notification } from './components/Notification';
 
 export default function Home() {
   const [geoJsonData, setGeoJsonData] = useState({
@@ -33,14 +33,13 @@ export default function Home() {
           const fileContent = reader.result;
           const fileName = file.name.toLowerCase();
 
-          // Validasi berdasarkan ekstensi
           if (fileName.endsWith(".geojson")) {
             const data = JSON.parse(fileContent);
             setGeoJsonData(data);
             createNotification({
               type: 'success',
-              message: `File ${file.name} berhasil diunggah.`,
-              title: 'Upload Berhasil',
+              message: `file ${file.name} was uploaded successfully.`,
+              title: 'success',
             });
           } else if (fileName.endsWith(".kml")) {
             const parser = new DOMParser();
@@ -49,33 +48,33 @@ export default function Home() {
             const converted = kml(xmlDoc);
             setGeoJsonData(converted);
             createNotification({
-              type: 'info',
-              message: `KML file ${file.name} successfully converted to GeoJSON.`,
-              title: 'Konversi Berhasil',
+              type: 'success',
+              message: `file ${file.name} was uploaded successfully.`,
+              title: 'success',
             });
           } else if (fileName.endsWith(".topojson")) {
             const topojsonData = JSON.parse(fileContent);
             const geojsonData = topojson.feature(topojsonData, topojsonData.objects[Object.keys(topojsonData.objects)[0]]);
             setGeoJsonData(geojsonData);
             createNotification({
-              type: 'warning',
-              message: `TopoJSON file ${file.name} is uploaded. Check the GeoJSON.`,
-              title: 'Peringatan',
+              type: 'success',
+              message: `file ${file.name} was uploaded successfully.`,
+              title: 'success',
             });
           } else {
             console.error("Unsupported file format");
             createNotification({
               type: 'error',
-              message: `Unsupported file format ${file.name}. Please upload a GeoJSON, KML, or TopoJSON file.`,
-              title: 'Error',
+              message: `unsupported file format ${file.name}. please upload a valid file.`,
+              title: 'error',
             });
           }
         } catch (error) {
           console.error("Invalid file", error);
           createNotification({
             type: 'error',
-            message: 'Error parsing the file. Please check the format.',
-            title: 'Error',
+            message: 'error parsing the file. please check the format.',
+            title: 'error',
           });
         }
       };
@@ -104,4 +103,3 @@ export default function Home() {
     </div>
   );
 }
-
