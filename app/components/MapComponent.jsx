@@ -1,16 +1,21 @@
-// src/components/MapComponent.jsx
-import { useEffect, useState } from "react";
-import L from "leaflet";
+import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "leaflet-draw/dist/leaflet.draw.css";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import ReactDOMServer from "react-dom";
+import {
+  MapContainer,
+  TileLayer,
+  GeoJSON,
+  FeatureGroup,
+  ScaleControl,
+  Popup,
+} from "react-leaflet";
+import "@geoman-io/leaflet-geoman-free";
+import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import FitBoundsComponent from "./FitBound";
 import LeafletControlGeocoder from "./Geocoder";
 import DrawComponent from "./DrawMap";
-import "leaflet-control-geocoder/dist/Control.Geocoder.css";
-import "leaflet-control-geocoder/dist/Control.Geocoder.js";
 
-// Override default Leaflet marker icon
+// Konfigurasi icon default Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -22,34 +27,35 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-const MapComponent = ({ geoJsonData, onGeoJSONChange }) => {
-  const [map, setMap] = useState(null);
-  const [geoJsonLayer, setGeoJsonLayer] = useState(null);
-
-  useEffect(() => {
-    if (map) {
-      console.log("Peta sudah siap:", map);
-    }
-  }, [map]);
-
+const MapComponent = ({ geoJsonData }) => {
   return (
     <MapContainer
-      whenCreated={(mapInstance) => {
-        setMap(mapInstance);
-      }}
       center={[-0.7893, 113.9213]}
       zoom={5}
       style={{ height: "665px", width: "100%" }}
-      doubleClickZoom={false}
-      dragging={true}
+      preferCanvas={true}
     >
-
-      <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <GeoJSON data={geoJsonData} />
-      <FitBoundsComponent geoJsonData={geoJsonData} geoJsonLayer={geoJsonLayer} />
+      <TileLayer
+        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="© 2024 Mikeu. All rights reserved."
+      />
+      {/* Fit bounds untuk GeoJSON */}
+      {geoJsonData && <FitBoundsComponent geoJsonData={geoJsonData} />}
+      {/* Geocoder Control */}
       <LeafletControlGeocoder />
-      <DrawComponent onGeoJSONChange={onGeoJSONChange} />
-
+      {/* Scale Control */}
+      <ScaleControl position="bottomleft" />
+      <FeatureGroup>
+        {/* Tambahkan GeoJSON */}
+        {geoJsonData && console.log("Data GeoJSON:", geoJsonData)}
+        {geoJsonData && (
+          <GeoJSON
+            data={geoJsonData}
+          />
+        )}
+        {/* Draw Component */}
+        <DrawComponent onGeoJSONChange={geoJsonData} />
+      </FeatureGroup>
     </MapContainer>
   );
 };

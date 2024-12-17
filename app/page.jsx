@@ -18,12 +18,6 @@ export default function Home() {
     setGeoJsonData(updatedGeoJSON);
   };
 
-  useEffect(() => {
-    if (geoJsonData) {
-      console.log("Updated GeoJSON data:", geoJsonData);
-    }
-  }, [geoJsonData]);
-
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
