@@ -80,7 +80,7 @@ export default function Home() {
     <div>
       <Head>
         <title>Mapin Aja</title>
-        <meta name="description">Web for geospatial viewer.</meta>
+        <meta name="description" content="Web for geospatial viewer." />
       </Head>
       <Header onFileUpload={handleFileUpload} Download={geoJsonData} />
       <main className="h-[665px] w-full lg:flex">
@@ -93,7 +93,7 @@ export default function Home() {
           onChange={handleGeoJSONChange}
         />
       </main>
-      <Notification /> {/* Menambahkan komponen notifikasi */}
+      <Notification />
     </div>
   );
 }
