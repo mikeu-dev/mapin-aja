@@ -9,14 +9,27 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@geoman-io/leaflet-geoman-free": "^2.17.0",
+    "@tmcw/togeojson": "^6.0.0",
+    "@turf/turf": "^7.1.0",
+    "ace-builds": "^1.36.5",
     "jsoneditor": "^10.0.3",
     "leaflet": "^1.9.4",
+    "leaflet-control-geocoder": "^2.4.0",
     "leaflet-draw": "^1.0.4",
+    "mapin-aja": "file:",
     "next": "14.2.4",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^18.3.1",
+    "react-ace": "^13.0.0",
+    "react-dom": "^18.3.1",
     "react-leaflet": "^4.2.1",
-    "react-leaflet-draw": "^0.20.4"
+    "react-leaflet-draw": "^0.20.4",
+    "react-leaflet-geoman-v2": "^1.0.1",
+    "react-notifications": "^1.7.4",
+    "react-toastify": "^10.0.6",
+    "tokml": "^0.4.0",
+    "topojson-client": "^3.1.0",
+    "topojson-server": "^3.0.1"
   },
   "devDependencies": {
     "eslint": "^8",

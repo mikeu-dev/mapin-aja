@@ -1,33 +1,78 @@
-"use client";
+"use client"
 import Head from "next/head";
 import { useState, useEffect } from "react";
+import { kml } from "@tmcw/togeojson";
+import * as topojson from 'topojson-client';
 import MapComponent from "./components/MapComponent";
 import Header from "./components/NavComponent";
 import GeojsonEditor from "./components/GeojsonEditor";
+import { createNotification, Notification } from './components/Notification';
 
 export default function Home() {
-  const initialGeoJSON = {
+  const [geoJsonData, setGeoJsonData] = useState({
     type: "FeatureCollection",
     features: [],
+  });
+
+  const handleGeoJSONChange = (updatedGeoJSON) => {
+    setGeoJsonData(updatedGeoJSON);
   };
 
-  const [geoJSON, setGeoJSON] = useState(initialGeoJSON);
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const fileContent = reader.result;
+          const fileName = file.name.toLowerCase();
 
-  const handleGeoJSONChange = (newGeoJSON) => {
-    setGeoJSON(newGeoJSON);
-  };
+          if (fileName.endsWith(".geojson")) {
+            const data = JSON.parse(fileContent);
+            setGeoJsonData(data);
+            createNotification({
+              type: 'success',
+              message: `file ${file.name} was uploaded successfully.`,
+              title: 'success',
+            });
+          } else if (fileName.endsWith(".kml")) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(fileContent, "application/xml");
 
-  const downloadGeoJson = () => {
-    if (typeof window !== "undefined") {
-      const dataStr =
-        "data:text/json;charset=utf-8," +
-        encodeURIComponent(JSON.stringify(geoJSON));
-      const downloadAnchorNode = document.createElement("a");
-      downloadAnchorNode.setAttribute("href", dataStr);
-      downloadAnchorNode.setAttribute("download", "data.geojson");
-      document.body.appendChild(downloadAnchorNode);
-      downloadAnchorNode.click();
-      downloadAnchorNode.remove();
+            const converted = kml(xmlDoc);
+            setGeoJsonData(converted);
+            createNotification({
+              type: 'success',
+              message: `file ${file.name} was uploaded successfully.`,
+              title: 'success',
+            });
+          } else if (fileName.endsWith(".topojson")) {
+            const topojsonData = JSON.parse(fileContent);
+            const geojsonData = topojson.feature(topojsonData, topojsonData.objects[Object.keys(topojsonData.objects)[0]]);
+            setGeoJsonData(geojsonData);
+            createNotification({
+              type: 'success',
+              message: `file ${file.name} was uploaded successfully.`,
+              title: 'success',
+            });
+          } else {
+            console.error("Unsupported file format");
+            createNotification({
+              type: 'error',
+              message: `unsupported file format ${file.name}. please upload a valid file.`,
+              title: 'error',
+            });
+          }
+        } catch (error) {
+          console.error("Invalid file", error);
+          createNotification({
+            type: 'error',
+            message: 'error parsing the file. please check the format.',
+            title: 'error',
+          });
+        }
+      };
+      reader.readAsText(file);
     }
   };
 
@@ -35,28 +80,20 @@ export default function Home() {
     <div>
       <Head>
         <title>Mapin Aja</title>
+        <meta name="description" content="Web for geospatial viewer." />
       </Head>
-      <Header />
-      <main className="h-[665px] w-full">
-        <div className="flex">
-          <MapComponent
-            geoJSON={geoJSON}
-            onGeoJSONChange={handleGeoJSONChange}
-          />
-          <GeojsonEditor
-            initialGeoJSON={geoJSON}
-            onChange={handleGeoJSONChange}
-          />
-        </div>
-        <div className="absolute top-0 right-0 mt-4 mr-4">
-          <button
-            onClick={downloadGeoJson}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Download GeoJSON
-          </button>
-        </div>
+      <Header onFileUpload={handleFileUpload} Download={geoJsonData} />
+      <main className="h-[665px] w-full lg:flex">
+        <MapComponent
+          geoJsonData={geoJsonData}
+          onGeoJSONChange={handleGeoJSONChange}
+        />
+        <GeojsonEditor
+          initialGeoJSON={geoJsonData}
+          onChange={handleGeoJSONChange}
+        />
       </main>
+      <Notification />
     </div>
   );
 }

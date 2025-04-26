@@ -37,3 +37,15 @@ textarea {
   pointer-events: auto; /* Pastikan pointer-events tidak diatur sebagai none */
 }
 
+.sr-only {
+    display: none;
+  }
+
+.custom-file-upload {
+  text-align: center;
+  font-size: 16px;
+}
+
+#file-upload {
+  display: none;
+}
