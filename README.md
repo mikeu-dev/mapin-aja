@@ -16,7 +16,8 @@
   - Shapefile
   - TopoJSON
 
+## Demo
+Coba langsung demo proyek ini di: [mapin-aja.vercel.app](https://mapin-aja.vercel.app)
+
 ## Lisensi
 Proyek ini dirilis dengan lisensi **MIT License**. Lihat file `LICENSE` untuk detail lebih lanjut.
-
-
