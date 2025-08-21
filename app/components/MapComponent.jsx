@@ -1,34 +1,24 @@
-import * as L from "leaflet";
+"use client"; // pastikan ini ada supaya Next.js tahu ini komponen client
+
+import { useEffect } from "react";
+import dynamic from "next/dynamic";
+
+// Import library Leaflet **hanya di client**
+const L = dynamic(() => import("leaflet"), { ssr: false });
 import "leaflet/dist/leaflet.css";
-import React, { useEffect } from "react";
-import ReactDOM from "react-dom";
-import Popup from "./PopupHandler";
-import {
-  MapContainer,
-  TileLayer,
-  GeoJSON,
-  FeatureGroup,
-  ScaleControl,
-  useMap,
-} from "react-leaflet";
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+
+// Import komponen internal
+import Popup from "./PopupHandler";
 import FitBoundsComponent from "./FitBound";
 import LeafletControlGeocoder from "./Geocoder";
 import DrawComponent from "./DrawMap";
 
-// Konfigurasi icon default Leaflet
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-});
+import { MapContainer, TileLayer, FeatureGroup, ScaleControl, useMap } from "react-leaflet";
+import { createRoot } from "react-dom/client";
 
-const PopupHandler = ({ geoJsonData }) => {
+const PopupHandlerClient = ({ geoJsonData }) => {
   const map = useMap();
 
   useEffect(() => {
@@ -38,7 +28,7 @@ const PopupHandler = ({ geoJsonData }) => {
       onEachFeature: (feature, layer) => {
         const popupElement = document.createElement("div");
 
-        ReactDOM.render(
+        createRoot(popupElement).render(
           <Popup
             feature={feature}
             onSave={(feat, newProps) => {
@@ -57,8 +47,7 @@ const PopupHandler = ({ geoJsonData }) => {
               layer.remove();
               console.log("Feature deleted");
             }}
-          />,
-          popupElement
+          />
         );
 
         layer.bindPopup(popupElement);
@@ -76,6 +65,19 @@ const PopupHandler = ({ geoJsonData }) => {
 };
 
 const MapComponent = ({ geoJsonData }) => {
+  // Konfigurasi icon default Leaflet
+  useEffect(() => {
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+      iconUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+      shadowUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+    });
+  }, []);
+
   return (
     <MapContainer
       center={[-0.7893, 113.9213]}
@@ -91,10 +93,8 @@ const MapComponent = ({ geoJsonData }) => {
       <LeafletControlGeocoder />
       <ScaleControl position="bottomleft" />
       <FeatureGroup>
-        <PopupHandler geoJsonData={geoJsonData} />
-        <DrawComponent
-          onGeoJSONChange={geoJsonData}
-        />
+        <PopupHandlerClient geoJsonData={geoJsonData} />
+        <DrawComponent onGeoJSONChange={geoJsonData} />
       </FeatureGroup>
     </MapContainer>
   );

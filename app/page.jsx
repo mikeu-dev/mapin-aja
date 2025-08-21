@@ -3,10 +3,10 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import { kml } from "@tmcw/togeojson";
 import * as topojson from 'topojson-client';
-import MapComponent from "./components/MapComponent";
 import Header from "./components/NavComponent";
 import GeojsonEditor from "./components/GeojsonEditor";
 import { createNotification, Notification } from './components/Notification';
+import MapComponent from "./components/MapComponentWrapper";
 
 export default function Home() {
   const [geoJsonData, setGeoJsonData] = useState({
