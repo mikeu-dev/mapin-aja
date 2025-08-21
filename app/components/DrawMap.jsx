@@ -36,7 +36,7 @@ const DrawComponent = ({ onGeoJSONChange }) => {
         const layer = e.layer;
         console.log("geojson remove: ", layer);
 
-        const removedId = layer.feature.properties.id;
+        const removedId = layer.feature?.properties.id;
         console.log("find id: ", removedId);
 
         if (removedId) {
