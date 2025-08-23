@@ -5,82 +5,133 @@ import { useMap } from "react-leaflet";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder.js";
 
-const LeafletControlGeocoder = () => {
-    const map = useMap();
-    const markerRef = useRef(null);  // Menggunakan useRef untuk menyimpan marker
+const LeafletControlGeocoder = ({ onSelect }) => {
+  const map = useMap();
+  const markerRef = useRef(null);
 
-    useEffect(() => {
-        if (map) {
-            map.zoomControl.setPosition("topright");
+  useEffect(() => {
+    if (map) {
+      map.zoomControl.setPosition("topright");
 
-            // Membuat kontrol geocoder dengan Nominatim
-            if (!map._controlContainer.querySelector(".leaflet-control-geocoder")) {
-                const geoCoderControl = L.Control.geocoder({
-                    collapsed: false,
-                    geocoder: L.Control.Geocoder.nominatim(),
-                    position: "topright", // posisi kontrol
-                    placeholder: "Search..." // placeholder input
-                });
-                geoCoderControl.addTo(map);
+      if (!map._controlContainer.querySelector(".leaflet-control-geocoder")) {
+        const geoCoderControl = L.Control.geocoder({
+          collapsed: false,
+          geocoder: L.Control.Geocoder.nominatim(),
+          position: "topright",
+          placeholder: "Search...",
+          defaultMarkGeocode: false,
+        });
+        geoCoderControl.addTo(map);
 
-                // Mendapatkan input field geocoder
-                const input = geoCoderControl.getContainer().querySelector("input");
+        const container = geoCoderControl.getContainer();
+        const input = container.querySelector("input");
 
-                // Membuat elemen untuk menampilkan hasil pencarian
-                const resultsContainer = document.createElement("div");
-                resultsContainer.classList.add("leaflet-control-geocoder-results", "relative", "bg-white", "border", "border-gray-300", "rounded-md", "shadow-lg", "max-h-60", "overflow-auto", "z-10", "w-80", "max-w-80");
-                geoCoderControl.getContainer().appendChild(resultsContainer);
+        input.setAttribute("type", "text");
+        input.style.caretColor = "black"; 
+        input.style.cursor = "text";
 
-                // Event listener untuk menangani pencarian saat input berubah
-                input.addEventListener("input", (e) => {
-                    const query = e.target.value;
+        const resultsContainer = document.createElement("div");
+        resultsContainer.classList.add(
+          "leaflet-control-geocoder-results",
+          "relative",
+          "bg-white",
+          "border",
+          "border-gray-300",
+          "rounded-md",
+          "shadow-lg",
+          "max-h-60",
+          "overflow-auto",
+          "z-10",
+          "w-80",
+          "max-w-80",
+          "text-gray-500"
+        );
+        container.appendChild(resultsContainer);
 
-                    if (query) {
-                        // Lakukan pencarian geocoder langsung
-                        const geocoder = L.Control.Geocoder.nominatim();
+        const clearBtn = document.createElement("button");
+        clearBtn.innerHTML = "✕";
+        clearBtn.type = "button";
+        clearBtn.className =
+          "absolute right-2 top-2 text-gray-400 hover:text-gray-600";
+        clearBtn.style.display = "none"; 
+        clearBtn.addEventListener("click", () => {
+          input.value = "";
+          resultsContainer.innerHTML = "";
+          clearBtn.style.display = "none";
 
-                        geocoder.geocode(query, (results) => {
-                            resultsContainer.innerHTML = ''; // Kosongkan hasil sebelumnya
+          if (markerRef.current) {
+            map.removeLayer(markerRef.current);
+            markerRef.current = null;
+          }
 
-                            if (results.length > 0) {
-                                // Tampilkan hasil pencarian
-                                results.forEach((result) => {
-                                    const item = document.createElement('div');
-                                    item.className = 'leaflet-control-geocoder-result relative cursor-pointer p-2 hover:bg-gray-100 max-w-80';
-                                    item.innerHTML = result.name;
-                                    item.addEventListener('click', () => {
-                                        // Menangani klik hasil pencarian
-                                        map.flyTo(result.center, map.getZoom());
+          // reset geojson ke parent
+          if (onSelect) {
+            onSelect(null);
+          }
+        });
+        container.style.position = "relative";
+        container.appendChild(clearBtn);
 
-                                        // Jika sudah ada marker sebelumnya, hapus
-                                        if (markerRef.current) {
-                                            map.removeLayer(markerRef.current);
-                                        }
+        input.addEventListener("input", (e) => {
+          const query = e.target.value;
+          clearBtn.style.display = query ? "block" : "none";
 
-                                        // Tambahkan marker di lokasi hasil pencarian
-                                        const newMarker = L.marker(result.center).addTo(map);
-                                        markerRef.current = newMarker;  // Simpan referensi marker baru
+          if (query) {
+            const geocoder = L.Control.Geocoder.nominatim();
 
-                                        // Anda bisa menambahkan popup jika diperlukan
-                                        newMarker.bindPopup(result.name).openPopup();
-                                    });
-                                    resultsContainer.appendChild(item);
-                                });
-                            } else {
-                                // Jika tidak ada hasil, tampilkan pesan "Tidak ada hasil"
-                                resultsContainer.innerHTML = '<div class="p-2 text-center text-gray-500">Tidak ada hasil ditemukan</div>';
-                            }
-                        });
-                    } else {
-                        // Jika tidak ada input, sembunyikan hasil
-                        resultsContainer.innerHTML = '';
+            geocoder.geocode(query, (results) => {
+              resultsContainer.innerHTML = "";
+
+              if (results.length > 0) {
+                results.forEach((result) => {
+                  const item = document.createElement("div");
+                  item.className =
+                    "leaflet-control-geocoder-result relative cursor-pointer p-2 hover:bg-gray-100 max-w-80 text-gray-500";
+                  item.innerHTML = result.name;
+                  item.addEventListener("click", () => {
+                    map.flyTo(result.center, map.getZoom());
+
+                    if (markerRef.current) {
+                      map.removeLayer(markerRef.current);
                     }
-                });
-            }
-        } 
-    }, [map]);  // Pastikan efek hanya berjalan sekali pada mount
 
-    return null;
+                    const newMarker = L.marker(result.center).addTo(map);
+                    markerRef.current = newMarker;
+
+                    newMarker.bindPopup(result.name).openPopup();
+
+                    // === kirim data ke parent dalam format GeoJSON Point ===
+                    const geojsonPoint = {
+                      type: "Feature",
+                      geometry: {
+                        type: "Point",
+                        coordinates: [result.center.lng, result.center.lat],
+                      },
+                      properties: {
+                        name: result.name,
+                      },
+                    };
+
+                    if (onSelect) {
+                      onSelect(geojsonPoint);
+                    }
+                  });
+                  resultsContainer.appendChild(item);
+                });
+              } else {
+                resultsContainer.innerHTML =
+                  '<div class="p-2 text-center text-gray-500">Tidak ada hasil ditemukan</div>';
+              }
+            });
+          } else {
+            resultsContainer.innerHTML = "";
+          }
+        });
+      }
+    }
+  }, [map, onSelect]);
+
+  return null;
 };
 
 export default LeafletControlGeocoder;

@@ -14,10 +14,6 @@ export default function Home() {
     features: [],
   });
 
-  const handleGeoJSONChange = (updatedGeoJSON) => {
-    setGeoJsonData(updatedGeoJSON);
-  };
-
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -86,11 +82,11 @@ export default function Home() {
       <main className="h-[665px] w-full lg:flex">
         <MapComponent
           geoJsonData={geoJsonData}
-          onGeoJSONChange={handleGeoJSONChange}
+          setGeoJsonData={setGeoJsonData}
         />
         <GeojsonEditor
           initialGeoJSON={geoJsonData}
-          onChange={handleGeoJSONChange}
+          onChange={setGeoJsonData}
         />
       </main>
       <Notification />

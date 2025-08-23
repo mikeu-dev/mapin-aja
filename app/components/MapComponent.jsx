@@ -73,7 +73,7 @@ const PopupHandler = ({ geoJsonData }) => {
   return null;
 };
 
-const MapComponent = ({ geoJsonData }) => {
+const MapComponent = ({ geoJsonData, setGeoJsonData }) => {
   return (
     <MapContainer
       center={[-0.7893, 113.9213]}
@@ -86,12 +86,24 @@ const MapComponent = ({ geoJsonData }) => {
         attribution="© 2024 Mikeu. All rights reserved."
       />
       {geoJsonData && <FitBoundsComponent geoJsonData={geoJsonData} />}
-      <LeafletControlGeocoder />
+      <LeafletControlGeocoder onSelect={(feature) => {
+        if (feature) {
+          setGeoJsonData({
+            type: "FeatureCollection",
+            features: [feature],
+          });
+        } else {
+          setGeoJsonData({
+            type: "FeatureCollection",
+            features: [],
+          });
+        }
+      }} />
       <ScaleControl position="bottomleft" />
       <FeatureGroup>
         <PopupHandler geoJsonData={geoJsonData} />
         <DrawComponent
-          onGeoJSONChange={geoJsonData}
+          onGeoJSONChange={setGeoJsonData}
         />
       </FeatureGroup>
     </MapContainer>
